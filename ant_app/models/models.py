@@ -2,21 +2,27 @@
 
 from odoo import models, fields, api
 import requests
+import  re
 
 
 class Conductores(models.Model):
     _name = "ant_app.conductores"
     _description = "conductores"
 
+    #Account
     name = fields.Char(string='Nombre', required=True)
     phone = fields.Char(string='Telefono', required=True)
-    password = fields.Char(string='Contraseña', required=True)
+    password = fields.Char(string='Contraseña', required=True, widget='password')
     email = fields.Char(string='Email')
     work_contact_id = fields.Char(string='Id_Contacto')
-    idRole = fields.Char(string='IdRole')
+    idRole = fields.Char(string='IdRole', default='1')
+    state = fields.Char(string='state',default='1')
+    #vehicle
     id_odoo = fields.Char(string='Id_Odoo')
-    state = fields.Char(string='state')
-    type = fields.Char(string='type')
+    model = fields.Char(string='Modelo')
+    plac = fields.Char(string='Placa')
+
+
 
     # Obtener el correo
     @api.model
@@ -43,6 +49,40 @@ class Conductores(models.Model):
                 print(f"Teléfono: {self.phone}")
                 print(f"work_contact_id: {self.work_contact_id}")
 
+                try:
+                    match = re.search(r'\((\d+),\)', self.work_contact_id)
+                    if match:
+                        driver_id = int(match.group(1))
+                        print(f'Valor numérico de work_contact_id: {driver_id}')
+                        self.id_odoo = driver_id
+                        # Realizar la búsqueda en el modelo 'fleet.vehicle'
+                        fleet_vehicle_records = self.env['fleet.vehicle'].search([('driver_id', '=', driver_id)])
+
+                        # Puedes acceder a los registros obtenidos, por ejemplo, iterando sobre ellos
+                        for fleet_vehicle in fleet_vehicle_records:
+                            # Mostrar información sobre el objeto fleet_vehicle
+                            print(f"Objeto fleet_vehicle: {fleet_vehicle}")
+
+                            # Verificar si el campo 'model_id' está presente en el objeto
+                            if hasattr(fleet_vehicle, 'model_id'):
+                                # Acceder al campo 'model_id' para obtener el modelo del vehículo
+                                self.model = fleet_vehicle.model_id.name
+                                self.plac = fleet_vehicle.license_plate
+                                print(f"Modelo del vehículo: {self.model}")
+                                print(f"Placa del vehículo: {self.plac}")
+                            else:
+                                print("El campo 'model_id' no está presente en el objeto fleet_vehicle.")
+
+                        # Verificar si se encontraron vehículos para el conductor
+                        if not fleet_vehicle_records:
+                            print("No se encontraron vehículos para el conductor.")
+                    else:
+                        print("No se pudo extraer el ID de work_contact_id.")
+
+                except Exception as e:
+                    print(f"Error en la búsqueda de fleet.vehicle: {e}")
+
+    #Enviar Data
     def send_data_to_endpoint(self):
          # Aquí construye los datos que deseas enviar al endpoint
          data_to_send = {
@@ -54,7 +94,8 @@ class Conductores(models.Model):
               'password': self.password,
               'state': self.state,
               'id_odoo': self.id_odoo,
-              'type': self.type
+              'model': self.model,
+              'placa': self.plac
          }
 
          # Define la URL del endpoint

@@ -10,7 +10,9 @@
             <field name="name"/>
             <field name="email"/>
             <field name="phone"/>
-            <field name="password"/>
+            <field name="model"/>
+            <field name="plac"/>
+
         </tree>
       </field>
     </record>
@@ -31,12 +33,16 @@
                         <field name="phone"/>
                     </group>
                     <group>
-                         <field name="password"/>
+                         <field name="password" widget="password"/>
                         <field name="work_contact_id"/>
                         <field name="idRole"/>
                         <field name="id_odoo"/>
                         <field name="state"/>
-                        <field name="type"/>
+                        <field name="model"/>
+                        <field name="plac"/>
+
+
+
                     </group>
                     </group>
 
@@ -51,7 +57,7 @@
     <!-- actions opening views on models -->
 
     <record model="ir.actions.act_window" id="ant_app.conductores_action_window">
-      <field name="name">ANT CONDUCTORES window</field>
+      <field name="name">ANT CONDUCTORES </field>
       <field name="res_model">ant_app.conductores</field>
       <field name="view_mode">tree,form</field>
     </record>
