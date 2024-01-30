@@ -2,27 +2,30 @@
 
 from odoo import models, fields, api
 import requests
-import  re
+import re
 
 
 class Conductores(models.Model):
     _name = "ant_app.conductores"
     _description = "conductores"
 
-    #Account
+    # Account
     name = fields.Char(string='Nombre', required=True)
     phone = fields.Char(string='Telefono', required=True)
     password = fields.Char(string='Contraseña', required=True, widget='password')
     email = fields.Char(string='Email')
     work_contact_id = fields.Char(string='Id_Contacto')
-    idRole = fields.Char(string='IdRole', default='1')
-    state = fields.Char(string='state',default='1')
-    #vehicle
+    idRole = fields.Selection([
+        ('1', 'Conductor'),
+        ('2', 'Administrativo'),
+        ('3', 'Secretariado')
+    ], string='Rol')
+
+    state = fields.Char(string='state', default='1')
+    # vehicle
     id_odoo = fields.Char(string='Id_Odoo')
     model = fields.Char(string='Modelo')
     plac = fields.Char(string='Placa')
-
-
 
     # Obtener el correo
     @api.model
@@ -30,10 +33,8 @@ class Conductores(models.Model):
         employees = self.env['hr.employee'].search([])
         return [(employee.id, employee.work_email) for employee in employees]
 
-    work_email = fields.Selection(selection="_get_work_email", string="Buscador", widget="selection", options="_get_work_email")
-
-
-
+    work_email = fields.Selection(selection="_get_work_email", string="Buscador", widget="selection",
+                                  options="_get_work_email")
 
     @api.onchange("work_email")
     def onchange_email(self):
@@ -82,43 +83,45 @@ class Conductores(models.Model):
                 except Exception as e:
                     print(f"Error en la búsqueda de fleet.vehicle: {e}")
 
-    #Enviar Data
+    # Enviar Data
     def send_data_to_endpoint(self):
-         # Aquí construye los datos que deseas enviar al endpoint
-         data_to_send = {
-              'name': self.name,
-              'email': self.email,
-              'phone': self.phone,
-              'idRole': self.idRole,
-              'user': self.email,
-              'password': self.password,
-              'state': self.state,
-              'id_odoo': self.id_odoo,
-              'model': self.model,
-              'placa': self.plac
-         }
+        # Aquí construye los datos que deseas enviar al endpoint
+        data_to_send = {
+            'name': self.name,
+            'email': self.email,
+            'phone': self.phone,
+            'idRole': int(self.idRole),
+            'user': self.email,
+            'password': self.password,
+            'state': self.state,
+            'id_odoo': self.id_odoo,
+            'model': self.model,
+            'placa': self.plac
+        }
 
-         # Define la URL del endpoint
-         endpoint_url = 'https://ant-kurier.backend.chvconsulting.es/account/create'
+        print('json a enviar', data_to_send)
 
-         # Envia la solicitud HTTP POST al endpoint con los datos
-         response = requests.post(endpoint_url, json=data_to_send)
+        # Define la URL del endpoint
+        endpoint_url = 'https://ant-kurier.backend.chvconsulting.es/account/create'
 
-         # Maneja la respuesta según sea necesario
-         if response.status_code == 201:
-              # Registro exitoso
-              self.popupNotification(title="Felicidades", message="Registrado en la APP-MOVIL")
+        # Envia la solicitud HTTP POST al endpoint con los datos
+        response = requests.post(endpoint_url, json=data_to_send)
 
-         elif response.status_code == 400:
-              # Correo ya registrado
-              self.popupNotification(title="Error de Registro", message="Correo ya registrado")
-         elif response.status_code == 500:
-              # Campos incompletos
-              self.popupNotification(title="Error de Registro", message="Campos Incompletos")
+        # Maneja la respuesta según sea necesario
+        if response.status_code == 201:
+            # Registro exitoso
+            self.popupNotification(title="Felicidades", message="Registrado en la APP-MOVIL")
 
-         else:
-              # Otro error
-              self.popupNotification(title="Error de Registro", message="Error en el servidor")
+        elif response.status_code == 400:
+            # Correo ya registrado
+            self.popupNotification(title="Error de Registro", message="Correo ya registrado")
+        elif response.status_code == 500:
+            # Campos incompletos
+            self.popupNotification(title="Error de Registro", message="Campos Incompletos")
+
+        else:
+            # Otro error
+            self.popupNotification(title="Error de Registro", message="Error en el servidor")
 
     def popupNotification(self, title, message, notification_type="info"):
         self.env['bus.bus']._sendone(self.env.user.partner_id,
