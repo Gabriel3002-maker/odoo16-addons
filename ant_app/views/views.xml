@@ -35,7 +35,7 @@
                     <group>
                          <field name="password" widget="password"/>
                         <field name="work_contact_id"/>
-                        <field name="idRole"/>
+                        <field name="idrole"/>
                         <field name="id_odoo"/>
                         <field name="state"/>
                         <field name="model"/>

@@ -15,7 +15,7 @@ class Conductores(models.Model):
     password = fields.Char(string='Contraseña', required=True, widget='password')
     email = fields.Char(string='Email')
     work_contact_id = fields.Char(string='Id_Contacto')
-    idRole = fields.Selection([
+    idrole = fields.Selection([
         ('1', 'Conductor'),
         ('2', 'Administrativo'),
         ('3', 'Secretariado')
@@ -90,7 +90,7 @@ class Conductores(models.Model):
             'name': self.name,
             'email': self.email,
             'phone': self.phone,
-            'idRole': int(self.idRole),
+            'idRole': int(self.idrole),
             'user': self.email,
             'password': self.password,
             'state': self.state,
