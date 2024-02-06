@@ -1,5 +1,6 @@
 <odoo>
   <data>
+
     <!-- explicit list view definition -->
 
     <record model="ir.ui.view" id="ant_app.conductores_list">
@@ -7,8 +8,8 @@
       <field name="model">ant_app.conductores</field>
       <field name="arch" type="xml">
         <tree>
-            <field name="name"/>
-            <field name="email"/>
+            <field name="name" class="oe_form_field"/>
+            <field name="email" class="oe_form_group_name"/>
             <field name="phone"/>
             <field name="model"/>
             <field name="plac"/>
@@ -16,6 +17,8 @@
         </tree>
       </field>
     </record>
+
+
 
 
 
@@ -40,9 +43,8 @@
                         <field name="state"/>
                         <field name="model"/>
                         <field name="plac"/>
-
-
-
+                         <field name="id_veh"/>
+                        <field name="odometer"/>
                     </group>
                     </group>
 
@@ -61,7 +63,6 @@
       <field name="res_model">ant_app.conductores</field>
       <field name="view_mode">tree,form</field>
     </record>
-
 
 
     <!-- server action to the one above -->

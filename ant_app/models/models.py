@@ -23,9 +23,11 @@ class Conductores(models.Model):
 
     state = fields.Char(string='state', default='1')
     # vehicle
-    id_odoo = fields.Char(string='Id_Odoo')
+    id_odoo = fields.Char(string='Id Odoo')
     model = fields.Char(string='Modelo')
     plac = fields.Char(string='Placa')
+    id_veh = fields.Char(string='Id Vehiculo')
+    odometer = fields.Char(string='Odometro')
 
     # Obtener el correo
     @api.model
@@ -39,6 +41,7 @@ class Conductores(models.Model):
     @api.onchange("work_email")
     def onchange_email(self):
         if self.work_email:
+            print('ID empleado:', self.id)
             # Obten el nombre asociado al ID seleccionado en work_email
             employee = self.env['hr.employee'].browse(self.work_email)
             if employee:
@@ -46,16 +49,19 @@ class Conductores(models.Model):
                 self.name = employee.name
                 self.phone = employee.work_phone
                 self.work_contact_id = employee.work_contact_id
+                self.id_odoo = employee.id
                 print(f"Nombre: {self.name}")
                 print(f"Teléfono: {self.phone}")
                 print(f"work_contact_id: {self.work_contact_id}")
+                print(f"id: {self.id_odoo}")
+
 
                 try:
                     match = re.search(r'\((\d+),\)', self.work_contact_id)
                     if match:
                         driver_id = int(match.group(1))
                         print(f'Valor numérico de work_contact_id: {driver_id}')
-                        self.id_odoo = driver_id
+                        self.work_contact_id = driver_id
                         # Realizar la búsqueda en el modelo 'fleet.vehicle'
                         fleet_vehicle_records = self.env['fleet.vehicle'].search([('driver_id', '=', driver_id)])
 
@@ -69,8 +75,22 @@ class Conductores(models.Model):
                                 # Acceder al campo 'model_id' para obtener el modelo del vehículo
                                 self.model = fleet_vehicle.model_id.name
                                 self.plac = fleet_vehicle.license_plate
+                                self.id_veh = fleet_vehicle.id
                                 print(f"Modelo del vehículo: {self.model}")
                                 print(f"Placa del vehículo: {self.plac}")
+                                print(f"ID Vehiculo: {self.id_veh}")
+
+                                #Buscamos nuestro odooetro con el id_veh
+                                fleet_vehicle_odometer = self.env['fleet.vehicle.odometer'].search(
+                                    [('vehicle_id', '=', fleet_vehicle.id)])
+
+                                # Imprimir información sobre los registros encontrados en fleet.vehicle.odometer
+                                # Inicializamos
+                                total_odometer_value = 0
+                                for odometer in fleet_vehicle_odometer:
+                                    print('Registro en fleet.vehicle.odometer:', odometer)
+                                    total_odometer_value += odometer.value
+                                    self.odometer = total_odometer_value
                             else:
                                 print("El campo 'model_id' no está presente en el objeto fleet_vehicle.")
 
@@ -96,7 +116,9 @@ class Conductores(models.Model):
             'state': self.state,
             'id_odoo': self.id_odoo,
             'model': self.model,
-            'placa': self.plac
+            'placa': self.plac,
+            "idVehicle_odoo": self.id_veh,
+            "odometer_odoo": self.odometer,
         }
 
         print('json a enviar', data_to_send)
