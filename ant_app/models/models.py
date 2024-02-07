@@ -84,13 +84,17 @@ class Conductores(models.Model):
                                 fleet_vehicle_odometer = self.env['fleet.vehicle.odometer'].search(
                                     [('vehicle_id', '=', fleet_vehicle.id)])
 
-                                # Imprimir información sobre los registros encontrados en fleet.vehicle.odometer
-                                # Inicializamos
-                                total_odometer_value = 0
-                                for odometer in fleet_vehicle_odometer:
-                                    print('Registro en fleet.vehicle.odometer:', odometer)
-                                    total_odometer_value += odometer.value
-                                    self.odometer = total_odometer_value
+                                #Ordenamos los registros por Fecha Descendete
+                                sorted_odometer_records = sorted(fleet_vehicle_odometer, key=lambda x:x.date, reverse=True)
+                                if sorted_odometer_records:
+                                    last_odometer_record = sorted_odometer_records[0]
+                                    print('Ultimo odometro del vehiculo', last_odometer_record)
+                                    #Asfgnar
+                                    self.odometer = last_odometer_record.value
+                                else:
+                                    print('No se Encontraron Registros')
+
+
                             else:
                                 print("El campo 'model_id' no está presente en el objeto fleet_vehicle.")
 
