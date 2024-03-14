@@ -27,7 +27,8 @@
       <field name="name">ANT CONDUCTORES FORMULARIO</field>
       <field name="model">ant_app.conductores</field>
       <field name="arch" type="xml">
-              <form>
+        <form>
+          <sheet>
                 <group>
                     <group>
                         <field name="work_email" options="{'no_open': True}" context="{'search_default_employee': 1}"/>
@@ -51,7 +52,8 @@
                     <group>
                         <button name="send_data_to_endpoint" string="Enviar datos" type="object" class="oe_highlight" style="align-self: center;"/>
                     </group>
-              </form>
+          </sheet>
+        </form>
       </field>
     </record>
 
