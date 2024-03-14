@@ -136,18 +136,18 @@ class Conductores(models.Model):
         # Maneja la respuesta según sea necesario
         if response.status_code == 201:
             # Registro exitoso
-            return self.open_wizard(title="Felicidades", message="Registrado en la APP-MOVIL", success=True)
+            self.popupNotification(title="Felicidades", message="Registrado en la APP-MOVIL")
 
         elif response.status_code == 400:
             # Correo ya registrado
-            return self.open_wizard(title="Error de Registro", message="Correo ya registrado", success=False)
+            self.popupNotification(title="Error de Registro", message="Correo ya registrado")
         elif response.status_code == 500:
             # Campos incompletos
-            return self.open_wizard(title="Error de Registro", message="Campos Incompletos", success=False)
+            self.popupNotification(title="Error de Registro", message="Campos Incompletos")
 
         else:
             # Otro error
-            return self.open_wizard(title="Error de Registro", message="Error en el servidor", success=False)
+            self.popupNotification(title="Error de Registro", message="Error en el servidor")
 
     def popupNotification(self, title, message, notification_type="info"):
         self.env['bus.bus']._sendone(self.env.user.partner_id,
@@ -158,17 +158,3 @@ class Conductores(models.Model):
                                          "type": notification_type,
                                      })
         return True
-    
-    def open_wizard(self, title, message, success):
-        return {
-            'name': title,
-            'type': 'ir.actions.act_window',
-            'res_model': 'ant.app.message.wizard',
-            'context': {
-                'default_message': message,
-                'default_success': success
-                },
-            'view_type': 'form',
-            'view_mode': 'form',
-            'target': 'new',
-        }

@@ -24,6 +24,5 @@
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
-        'wizard/ant_app_wizard.xml'
     ],
 }

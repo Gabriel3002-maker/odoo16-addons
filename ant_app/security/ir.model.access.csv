@@ -1,3 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_ant_app_conductores,ant_app.conductores,model_ant_app_conductores,base.group_user,1,1,1,1
-access_ant_app_message_wizard,ant_app.message.wizard,model_ant_app_message_wizard,base.group_user,1,1,1,1
