@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ant_app_wizard_form" model="ir.ui.view">
+        <field name="name">ant.app.message.wizard</field>
+        <field name="model">ant.app.message.wizard</field>
+        <field name="arch" type="xml">
+        <form>
+                <field name="message" readonly="1" nolabel="1"/>
+                <field name="success" invisible="1"/>
+            <footer>
+                <button string="Continuar" class="oe_highlight" type="object" name="confirm" attrs="{'invisible': [('success','=', False)]}"/>
+                <button string="Cerrar" class="oe_highlight" special="cancel"/>
+            </footer>
+        </form>
+        </field>
+    </record>
+</odoo>
